@@ -37,23 +37,29 @@ def parse_lib(name, region_only = None):
 
     return season
 
-out = sys.stdout
+out = open("library.txt", "w")
 
-def write_seasons(season, region_prefix, link):
+def write_seasons(season, region_prefix, link, all_seasons = True):
     for s in season.keys():
         out.write(f"\n\nREGION {region_prefix}{s}\n")
 
         for e in season[s]:
             if debug:
-                out.write(f"EXPORT_EXCLUDE {e[0]} {debug_for[s]}\n")
-                out.write(f"EXPORT_EXCLUDE_SEASON {s} {e[0]} {debug_for[s]}\n")
+                realpath = debug_for[s]
             else:
-                out.write(f"EXPORT_EXCLUDE {e[0]} {link}/{e[1]}\n")
-                out.write(f"EXPORT_EXCLUDE_SEASON {s} {e[0]} {link}/{e[1]}\n")
+                realpath = f"{link}/{e[1]}"
+
+            out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
+
+            if all_seasons:
+                for s1 in seasons:
+                    out.write(f"EXPORT_EXCLUDE_SEASON {s1} {e[0]} {realpath}\n")
+            else:
+                out.write(f"EXPORT_EXCLUDE_SEASON {s} {e[0]} {realpath}\n")
 
 
 ########### main
-debug = True
+print(sys.argv)
 
 debug_for = {"win": "1200_forests/win/tree_oak_1.for",
              "spr": "1200_forests/spr/tree_aspen_1.for",
@@ -62,7 +68,7 @@ debug_for = {"win": "1200_forests/win/tree_oak_1.for",
 
 
 out.write("""A
-800
+1200
 LIBRARY
 
 # seasons ###################################
@@ -91,15 +97,17 @@ for z in sh_zones:
         out.write(f"REGION_BITMAP simHeaven_X-World_Vegetation_Library/Maps/climate_zone_{z}.png\n")
         out.write(f"REGION_DREF o4xpsm/{s} == 1\n")
 
-debug = True
+debug = False
+#debug = True
 season = parse_lib("1200_forests/library.txt")
 write_seasons(season, "o4xpsm_", "1200_forests")
 
 season = parse_lib("Global_Forests_v2/library.txt")
 write_seasons(season, "o4xpsm_", "Global_Forests_v2")
 
-debug = True
+#debug = False
 for z in sh_zones:
     season = parse_lib("simHeaven_X-World_Vegetation_Library/library.txt", "climate_zone_" + z)
-    write_seasons(season, f"o4xpsm_sh_{z}_", "simHeaven_X-World_Vegetation_Library")
+    write_seasons(season, f"o4xpsm_sh_{z}_", "simHeaven_X-World_Vegetation_Library", True)
 
+out.close()
