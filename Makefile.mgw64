@@ -1,0 +1,35 @@
+SCENERYDIR=E:/X-Plane-12/Custom Scenery/o4xpsm
+PLUGDIR=$(SCENERYDIR)/plugins/o4xpsm/win_x64
+
+OBJDIR=./OBJ
+
+TARGET=o4xpsm.xpl
+HEADERS=$(wildcard *.h)
+SOURCES=$(wildcard *.c)
+SDK=../SDK
+OBJECTS=$(addprefix $(OBJDIR)/, $(SOURCES:.c=.o))
+
+CC=x86_64-w64-mingw32-gcc
+LD=x86_64-w64-mingw32-gcc
+
+CFLAGS+=-mdll -g0 -O2 -s -Wall -fdiagnostics-color -Wno-format-overflow -DWINDOWS -DWIN32 \
+	-I$(SDK)/CHeaders/XPLM -I$(SDK)/CHeaders/Widgets -DIBM=1 -DXPLM200
+
+LDFLAGS=-shared -static-libgcc -static -lpthread
+LIBS=-L$(SDK)/Libraries/Win -lXPLM_64 -lXPWidgets_64
+
+all: $(TARGET)
+
+$(OBJDIR)/%.o: %.c
+	mkdir -p $(OBJDIR)
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+$(TARGET): $(OBJECTS)
+	$(LD) -o $(TARGET) $(LDFLAGS) $(OBJECTS) $(LIBS)
+
+install: $(TARGET)
+	mkdir -p "$(PLUGDIR)"
+	cp -p $(TARGET) "$(PLUGDIR)"
+
+clean:
+	rm $(OBJECTS) $(TARGET)
