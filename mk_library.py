@@ -39,7 +39,7 @@ def parse_lib(name, region_only = None):
 
 out = open("library.txt", "w")
 
-def write_seasons(season, region_prefix, link, all_seasons = True):
+def write_seasons(season, region_prefix, link):
     for s in season.keys():
         out.write(f"\n\nREGION {region_prefix}{s}\n")
 
@@ -49,13 +49,9 @@ def write_seasons(season, region_prefix, link, all_seasons = True):
             else:
                 realpath = f"{link}/{e[1]}"
 
-            out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
-
-            if all_seasons:
-                for s1 in seasons:
-                    out.write(f"EXPORT_EXCLUDE_SEASON {s1} {e[0]} {realpath}\n")
-            else:
-                out.write(f"EXPORT_EXCLUDE_SEASON {s} {e[0]} {realpath}\n")
+            out.write(f"EXPORT_RATIO 0.5 {e[0]} {realpath}\n")
+            #out.write(f"EXPORT_EXCLUDE_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
+            out.write(f"EXPORT_RATIO_SEASON win,spr,sum,fal 0.5 {e[0]} {realpath}\n")
 
 
 ########### main
@@ -105,9 +101,8 @@ write_seasons(season, "o4xpsm_", "1200_forests")
 season = parse_lib("Global_Forests_v2/library.txt")
 write_seasons(season, "o4xpsm_", "Global_Forests_v2")
 
-#debug = False
 for z in sh_zones:
     season = parse_lib("simHeaven_X-World_Vegetation_Library/library.txt", "climate_zone_" + z)
-    write_seasons(season, f"o4xpsm_sh_{z}_", "simHeaven_X-World_Vegetation_Library", True)
+    write_seasons(season, f"o4xpsm_sh_{z}_", "simHeaven_X-World_Vegetation_Library")
 
 out.close()

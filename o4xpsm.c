@@ -46,6 +46,8 @@ static XPLMDataRef date_day_dr, latitude_dr;
 static int cur_day = -1;
 static int season_win, season_spr, season_sum, season_fal;
 static int cached_day = -10;
+static const char *season_str[] = {"win", "spr", "sum", "fal"};
+static const int season_overlap = 15;
 
 static void
 log_msg(const char *fmt, ...)
@@ -93,6 +95,9 @@ load_pref()
 static int
 read_season_acc(void *ref)
 {
+    if (! o4xpsm_enabled)
+        return 0;
+
     int s = (long long)ref;
     int val = 0;
 
@@ -109,9 +114,13 @@ read_season_acc(void *ref)
         case 3:
             val = season_fal;
             break;
+        default:
+            log_msg("invalid season code %d", s);
+            s = 0;
+            val = 0;
     }
 
-    log_msg("accessor %d called, returns %d", s, val);
+    log_msg("accessor %s called, returns %d", season_str[s], val);
     return val;
 }
 
@@ -127,16 +136,17 @@ set_season(int day)
 
     season_win = season_spr = season_sum = season_fal = 0;
 
-    if (day < 80)
+    if (350 - season_overlap <= day || day <= 80 + season_overlap)
         season_win = 1;
-    else if (day < 170)
+
+    if (80 - season_overlap <= day && day < 170 + season_overlap)
         season_spr = 1;
-    else if (day < 260)
+
+    if (170 - season_overlap <= day && day < 260 + season_overlap)
         season_sum = 1;
-    else if (day < 350)
+
+    if (260 - season_overlap <= day && day < 350 + season_overlap)
         season_fal = 1;
-    else
-        season_win = 1;
 
 #if 0
     double lat = XPLMGetDatad(latitude_dr);
