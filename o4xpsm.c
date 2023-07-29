@@ -47,7 +47,6 @@ static int cur_day = -1;
 static int season_win, season_spr, season_sum, season_fal;
 static int cached_day = -10;
 static const char *season_str[] = {"win", "spr", "sum", "fal"};
-static const int season_overlap = 15;
 
 static void
 log_msg(const char *fmt, ...)
@@ -134,25 +133,35 @@ set_season(int day)
     if (day == cur_day)
         return;
 
+    int nh = (XPLMGetDatad(latitude_dr) > 0.0);
+
+    /*
+     * Each season .for has a pretty step gradient towards the next season.
+     * E.g. "sum" after 1.8. is pretty much fall while "fal" pre-season is pretty much summer.
+     * It's therefore essential that an overlap with the next season is started early enough.
+     * Otherwise you have late summer with "sum": looks like fall, switch abruptly to "fal": Looks like summer
+     */
+
+    static const int pre = 65;
+    static const int post = 15;
+
     season_win = season_spr = season_sum = season_fal = 0;
 
-    if (350 - season_overlap <= day || day <= 80 + season_overlap)
-        season_win = 1;
+    if (350 - pre <= day || day <= 80 + post) {
+        if (nh) season_win = 1; else season_sum = 1;
+    }
 
-    if (80 - season_overlap <= day && day < 170 + season_overlap)
-        season_spr = 1;
+    if (80 - pre <= day && day < 170 + post) {
+        if (nh) season_spr = 1; else season_fal = 1;
+    }
 
-    if (170 - season_overlap <= day && day < 260 + season_overlap)
-        season_sum = 1;
+    if (170 - pre <= day && day < 260 + post) {
+        if (nh) season_sum = 1; else season_win = 1;
+    }
 
-    if (260 - season_overlap <= day && day < 350 + season_overlap)
-        season_fal = 1;
-
-#if 0
-    double lat = XPLMGetDatad(latitude_dr);
-    if (lat < 0)
-        o4xpsm_season = -o4xpsm_season;
-#endif
+    if (260 - pre <= day && day < 350 + post) {
+        if (nh) season_fal = 1; else season_spr = 1;
+    }
 
     log_msg("day: %d->%d, season: %d, %d, %d, %d", cur_day, day,
             season_win, season_spr, season_sum, season_fal);

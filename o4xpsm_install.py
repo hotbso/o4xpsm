@@ -27,9 +27,9 @@ import logging
 seasons = ["win", "spr", "sum", "fal"]
 sh_zones = ["vcld", "cld", "tmp", "wrm", "vhot"]
 
-debug_for = {"win": "1200_forests/win/tree_oak_1.for",
+debug_for = {"win": "1200_forests/sum/tree_coconut_palm_1.for",
              "spr": "1200_forests/spr/tree_aspen_1.for",
-             "sum": "1200_forests/sum/tree_coconut_palm_1.for",
+             "sum": "1200_forests/sum/tree_maple_2.for",
              "fal": "1200_forests/fal/tree_maple_2.for"}
 
 simheaven_path = None
@@ -75,13 +75,16 @@ def write_seasons(season, region_prefix, link):
 
         for e in season[s]:
             if debug:
-                realpath = debug_for[s]
+                realpath = "1200_forests/sum/tree_maple_2.for" #debug_for[s]
             else:
                 realpath = f"{link}/{e[1]}"
 
-            out.write(f"EXPORT_RATIO 0.5 {e[0]} {realpath}\n")
-            #out.write(f"EXPORT_EXCLUDE_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
-            out.write(f"EXPORT_RATIO_SEASON win,spr,sum,fal 0.5 {e[0]} {realpath}\n")
+            if False:
+                out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
+                out.write(f"EXPORT_EXCLUDE_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
+            else:
+                out.write(f"EXPORT_RATIO 0.5 {e[0]} {realpath}\n")
+                out.write(f"EXPORT_RATIO_SEASON win,spr,sum,fal 0.5 {e[0]} {realpath}\n")
 
 def parse_scenery_packs():
     with open("../scenery_packs.ini", "r") as sp:
@@ -139,6 +142,9 @@ logging.basicConfig(level=logging.INFO,
                               logging.StreamHandler()])
 
 logging.info(f"args: {sys.argv}")
+debug = "-debug" in sys.argv
+if debug:
+    logging.info("Debug mode enabled")
 
 logging.info("Parsing scenery_packs.ini")
 parse_scenery_packs()
@@ -186,8 +192,6 @@ for z in sh_zones:
         out.write(f"REGION_BITMAP simHeaven_X-World_Vegetation_Library/Maps/climate_zone_{z}.png\n")
         out.write(f"REGION_DREF o4xpsm/{s} == 1\n")
 
-debug = False
-#debug = True
 logging.info("Processing XP12 native forests")
 season = parse_lib("1200_forests/library.txt")
 write_seasons(season, "o4xpsm_", "1200_forests")
