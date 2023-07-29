@@ -18,7 +18,7 @@ CFLAGS+=-mdll -g0 -O2 -s -Wall -fdiagnostics-color -Wno-format-overflow -DWINDOW
 LDFLAGS=-shared -static-libgcc -static -lpthread
 LIBS=-L$(SDK)/Libraries/Win -lXPLM_64 -lXPWidgets_64
 
-all: $(TARGET)
+all: $(TARGET) o4xpsm_install.exe
 
 $(OBJDIR)/%.o: %.c
 	mkdir -p $(OBJDIR)
@@ -27,9 +27,16 @@ $(OBJDIR)/%.o: %.c
 $(TARGET): $(OBJECTS)
 	$(LD) -o $(TARGET) $(LDFLAGS) $(OBJECTS) $(LIBS)
 
-install: $(TARGET)
+install: $(TARGET) o4xpsm_install.exe
 	mkdir -p "$(PLUGDIR)"
-	cp -p $(TARGET) "$(PLUGDIR)"
+	mkdir -p o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
+	cp -p $(TARGET) o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
+	cp -p o4xpsm_install.exe o4xp_Seasons_Manager
+	cd o4xp_Seasons_Manager && cp -rp . "$(SCENERYDIR)/."
 
 clean:
 	rm $(OBJECTS) $(TARGET)
+
+o4xpsm_install.exe: o4xpsm_install.py
+	python -m PyInstaller --onefile o4xpsm_install.py
+	mv dist/o4xpsm_install.exe .

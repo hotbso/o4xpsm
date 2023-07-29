@@ -1,12 +1,15 @@
 # Prerequisites
 *.d
 # XPL plugins
-
+build
 *.xpl
 OBJ*
 
 plugins
 library.txt
+build
+dist
+*.spec
 
 # Object files
 *.o
