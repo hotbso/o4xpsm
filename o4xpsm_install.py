@@ -79,12 +79,8 @@ def write_seasons(season, region_prefix, link):
             else:
                 realpath = f"{link}/{e[1]}"
 
-            if True:
-                out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
-                out.write(f"EXPORT_EXCLUDE_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
-            else:
-                out.write(f"EXPORT_RATIO 0.5 {e[0]} {realpath}\n")
-                out.write(f"EXPORT_RATIO_SEASON win,spr,sum,fal 0.5 {e[0]} {realpath}\n")
+            #out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
+            out.write(f"EXPORT_EXCLUDE_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
 
 def parse_scenery_packs():
     with open("../scenery_packs.ini", "r") as sp:
@@ -207,4 +203,4 @@ if simheaven_path is not None:
         write_seasons(season, f"o4xpsm_sh_{z}_", "simHeaven_X-World_Vegetation_Library")
 
 out.close()
-logging.info("Done")
+logging.info("Success!")
