@@ -27,11 +27,13 @@ $(OBJDIR)/%.o: %.c
 $(TARGET): $(OBJECTS)
 	$(LD) -o $(TARGET) $(LDFLAGS) $(OBJECTS) $(LIBS)
 
-install: $(TARGET) o4xpsm_install.exe
+install: $(TARGET) o4xpsm_install.exe 00_NOTES.txt
 	mkdir -p "$(PLUGDIR)"
 	mkdir -p o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
 	cp -p $(TARGET) o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
-	cp -p o4xpsm_install.exe o4xp_Seasons_Manager
+	cp -p o4xpsm_install.exe o4xp_Seasons_Manager/.
+	cp -p o4xpsm_install.py o4xp_Seasons_Manager/.
+	cp -p 00_NOTES.txt o4xp_Seasons_Manager/.
 	cd o4xp_Seasons_Manager && cp -rp . "$(SCENERYDIR)/."
 
 clean:

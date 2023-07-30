@@ -1,0 +1,48 @@
+
+This is a Scenery so it must go into "Custom Sceneries" !!
+==========================================================
+
+- it tweaks vegetation of XP12, Global Forests v2 + Simheaven
+- it "overlays" -> it does NOT change the above-mentioned sceneries
+
+It is very obscure when and to what extent XP rereads sceneries so after a
+change of date the vegetation often does NOT yet reflect the selected date.
+Another "Reload Scenerey" is often necessary.
+
+o4xp_Seasons_Manager with the embedded plugin caches the current date + state on disk
+and loads this data after start of X-Plane. So if you select a different date after startup
+of X-Plane you get some mixed visuals.
+
+Therefore o4xp_Seasons_Manager works best when you mostly fly with real time.
+You get a smooth transition from flight to flight.
+
+Installation
+============
+- drop the zip into "Custom Sceneries"
+- run the o4xpsm_install.exe or o4xpsm_install.py (when Python 3.x is installed)
+  - it scans for supported sceneries and creates appropriate links
+  - it does NOT alter the other sceneries
+- start X Plane and a flight
+- enable "Ortho Mode" in the plugins menu
+- stop X-Plane
+- move the line with "o4xp_Seasons_Manager" just below "SCENERY_PACK *GLOBAL_AIRPORTS*"
+  it must be ABOVE simHeaven_X-World_Vegetation_Library and Global_Forests_v2
+
+
+------------------------ example -------------------------------------------------
+....
+SCENERY_PACK Custom Scenery/X-Plane Landmarks - Washington DC/
+SCENERY_PACK *GLOBAL_AIRPORTS*
+SCENERY_PACK Custom Scenery/No_Highway_Lights/
+SCENERY_PACK Custom Scenery/o4xp_Seasons_Manager/
+SCENERY_PACK Custom Scenery/simHeaven_X-World_Vegetation_Library/
+SCENERY_PACK_DISABLED Custom Scenery/simHeaven_X-World_Europe-1-vfr/
+SCENERY_PACK Custom Scenery/simHeaven_X-World_Europe-2-regions/
+SCENERY_PACK_DISABLED Custom Scenery/simHeaven_X-World_Europe-3-details/
+SCENERY_PACK Custom Scenery/simHeaven_X-World_Europe-4-extras/
+SCENERY_PACK Custom Scenery/simHeaven_X-World_Europe-5-footprints/
+SCENERY_PACK Custom Scenery/simHeaven_X-World_Europe-6-scenery/
+SCENERY_PACK Custom Scenery/Global_Forests_v2/
+SCENERY_PACK_DISABLED Custom Scenery/simHeaven_X-World_Europe-7-forests/
+SCENERY_PACK Custom Scenery/simHeaven_X-World_Europe-8-network/
+....
