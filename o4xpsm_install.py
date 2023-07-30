@@ -79,7 +79,7 @@ def write_seasons(season, region_prefix, link):
             else:
                 realpath = f"{link}/{e[1]}"
 
-            if False:
+            if True:
                 out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
                 out.write(f"EXPORT_EXCLUDE_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
             else:
@@ -124,9 +124,8 @@ def check_and_link(name, path):
 
         if sys.platform == "win32":
             logging.info(f"creating junction {name} -> {path}")
-            logging.info(f"path: {path}")
             path = os.path.abspath(path)
-            logging.info(f"path: {path}")
+            #logging.info(f"path: {path}")
             out = subprocess.run(shlex.split(f'mklink /j "{name}" "{path}"'), shell = True)
             if out.returncode != 0:
                 logging.error(f"Can't create junction: {out}")

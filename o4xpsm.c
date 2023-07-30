@@ -69,7 +69,8 @@ save_pref()
     if (NULL == f)
         return;
 
-    fprintf(f, "%d,%d", o4xpsm_enabled, cur_day);  // cache current season
+    fprintf(f, "%d,%d,%d,%d,%d,%d", o4xpsm_enabled, cur_day,
+                season_win, season_spr, season_sum, season_fal);
     fclose(f);
 }
 
@@ -81,8 +82,10 @@ load_pref()
     if (NULL == f)
         return;
 
-    if (1 <= fscanf(f, "%i,%i", &o4xpsm_enabled, &cached_day))
-        log_msg("From pref: o4xpsm_enabled: %d, cached_day: %d", o4xpsm_enabled, cached_day);
+    if (6 == fscanf(f, "%i,%i,%i,%i,%i,%i", &o4xpsm_enabled, &cached_day,
+                    &season_win, &season_spr, &season_sum, &season_fal))
+        log_msg("From pref: o4xpsm_enabled: %d, cached_day: %d, seasons: %d,%d,%d,%d",
+                o4xpsm_enabled, cached_day, season_win, season_spr, season_sum, season_fal);
     else {
         o4xpsm_enabled = 0;
         log_msg("Error readinf pref");
@@ -133,7 +136,16 @@ set_season(int day)
     if (day == cur_day)
         return;
 
-    int nh = (XPLMGetDatad(latitude_dr) > 0.0);
+    season_win = season_spr = season_sum = season_fal = 0;
+
+    if (0 <= day && day <= 60)      // Jan + Feb look like spring or summer
+        season_win = 1;
+
+    if (212 <= day && day < 242)   // August is already pretty much fall
+        season_spr = 1;            // late spring looks more like summer
+
+#if 0
+    int nh = (XPLMGetDatad(latitude_dr) >= 0.0);
 
     /*
      * Each season .for has a pretty step gradient towards the next season.
@@ -145,7 +157,6 @@ set_season(int day)
     static const int pre = 65;
     static const int post = 15;
 
-    season_win = season_spr = season_sum = season_fal = 0;
 
     if (350 - pre <= day || day <= 80 + post) {
         if (nh) season_win = 1; else season_sum = 1;
@@ -162,6 +173,7 @@ set_season(int day)
     if (260 - pre <= day && day < 350 + post) {
         if (nh) season_fal = 1; else season_spr = 1;
     }
+#endif
 
     log_msg("day: %d->%d, season: %d, %d, %d, %d", cur_day, day,
             season_win, season_spr, season_sum, season_fal);
@@ -213,12 +225,14 @@ XPluginStart(char *out_name, char *out_sig, char *out_desc)
     date_day_dr = XPLMFindDataRef("sim/time/local_date_days");
     latitude_dr = XPLMFindDataRef("sim/flightmodel/position/latitude");
 
+#if 0
     if (o4xpsm_enabled) {
         if (cached_day >= 0)
             set_season(cached_day);
         else
             set_season(XPLMGetDatai(date_day_dr));
     }
+#endif
 
     XPLMRegisterDataAccessor("o4xpsm/win", xplmType_Int, 0, read_season_acc,
                              NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
