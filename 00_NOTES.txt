@@ -18,6 +18,7 @@ You get a smooth transition from flight to flight.
 
 Installation
 ============
+- if you have gfsm installed, remove it and revert GFv2 to its original state
 - drop the zip into "Custom Sceneries"
 - run the o4xpsm_install.exe or o4xpsm_install.py (when Python 3.x is installed)
   - it scans for supported sceneries and creates appropriate links
