@@ -119,6 +119,7 @@ def check_and_link(name, path):
             logging.info(f"path: {path}")
 
         if sys.platform == "win32":
+            # os.symlink needs Administrator rights so create a junction
             logging.info(f"creating junction {name} -> {path}")
             path = os.path.abspath(path)
             #logging.info(f"path: {path}")
@@ -127,7 +128,7 @@ def check_and_link(name, path):
                 logging.error(f"Can't create junction: {out}")
                 exit(1)
         else:
-            logging.error("patform {sys.platform} is not (yet) implemented")
+            os.symlink(path, name)
 
 ###########
 ## main
@@ -140,6 +141,11 @@ logging.info(f"args: {sys.argv}")
 debug = "-debug" in sys.argv
 if debug:
     logging.info("Debug mode enabled")
+
+install_dir = os.path.basename(os.path.normpath(os.path.join(os.getcwd(), '..')))
+if install_dir != 'Custom Scenery':
+    logging.error("Installation error, must be installed in 'Custom Scenery'")
+    exit(1)
 
 logging.info("Parsing scenery_packs.ini")
 parse_scenery_packs()
