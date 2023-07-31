@@ -3,7 +3,9 @@ PLUGDIR=$(SCENERYDIR)/plugins/o4xpsm/win_x64
 
 OBJDIR=./OBJ
 
-TARGET=o4xpsm.xpl
+include version.mak
+
+TARGET=$(OBJDIR)/o4xpsm.xpl
 HEADERS=$(wildcard *.h)
 SOURCES=$(wildcard *.c)
 SDK=../SDK
@@ -12,13 +14,13 @@ OBJECTS=$(addprefix $(OBJDIR)/, $(SOURCES:.c=.o))
 CC=x86_64-w64-mingw32-gcc
 LD=x86_64-w64-mingw32-gcc
 
-CFLAGS+=-mdll -g0 -O2 -s -Wall -fdiagnostics-color -Wno-format-overflow -DWINDOWS -DWIN32 \
-	-I$(SDK)/CHeaders/XPLM -I$(SDK)/CHeaders/Widgets -DIBM=1 -DXPLM200
+CFLAGS+=-DVERSION=\"$(VERSION)\"  -mdll -g0 -O2 -s -Wall -fdiagnostics-color -Wno-format-overflow -DWINDOWS -DWIN32 \
+	-I$(SDK)/CHeaders/XPLM -I$(SDK)/CHeaders/Widgets -DIBM=1
 
 LDFLAGS=-shared -static-libgcc -static -lpthread
 LIBS=-L$(SDK)/Libraries/Win -lXPLM_64 -lXPWidgets_64
 
-all: $(TARGET) o4xpsm_install.exe
+all: $(TARGET) o4xp_Seasons_Manager/o4xpsm_install.exe
 
 $(OBJDIR)/%.o: %.c
 	mkdir -p $(OBJDIR)
@@ -27,11 +29,10 @@ $(OBJDIR)/%.o: %.c
 $(TARGET): $(OBJECTS)
 	$(LD) -o $(TARGET) $(LDFLAGS) $(OBJECTS) $(LIBS)
 
-install: $(TARGET) o4xpsm_install.exe 00_NOTES.txt
+install: $(TARGET) o4xp_Seasons_Manager/o4xpsm_install.exe 00_NOTES.txt
 	mkdir -p "$(PLUGDIR)"
 	mkdir -p o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
 	cp -p $(TARGET) o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
-	cp -p o4xpsm_install.exe o4xp_Seasons_Manager/.
 	cp -p o4xpsm_install.py o4xp_Seasons_Manager/.
 	cp -p 00_NOTES.txt o4xp_Seasons_Manager/.
 	cd o4xp_Seasons_Manager && cp -rp . "$(SCENERYDIR)/."
@@ -39,6 +40,5 @@ install: $(TARGET) o4xpsm_install.exe 00_NOTES.txt
 clean:
 	rm $(OBJECTS) $(TARGET)
 
-o4xpsm_install.exe: o4xpsm_install.py
-	python -m PyInstaller --onefile o4xpsm_install.py
-	mv dist/o4xpsm_install.exe .
+o4xp_Seasons_Manager/o4xpsm_install.exe: o4xpsm_install.py
+	python -m PyInstaller --distpath o4xp_Seasons_Manager/. --workpath $(OBJDIR) --onefile o4xpsm_install.py
