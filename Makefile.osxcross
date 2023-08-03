@@ -33,10 +33,10 @@ LIBS+=-liconv
 all: $(TARGET)
     $(shell [ -d $(OBJDIR) ] || mkdir $(OBJDIR))
 
-$(OBJDIR)/%.o_arm: %.c
+$(OBJDIR)/%.o_arm: %.c version.mak
 	$(CCa) $(CFLAGS) -o $@ -c $<
 
-$(OBJDIR)/%.o_x86: %.c
+$(OBJDIR)/%.o_x86: %.c  version.mak
 	$(CCx) $(CFLAGS) -o $@ -c $<
 
 $(TARGET)_arm: $(OBJECTS_arm)

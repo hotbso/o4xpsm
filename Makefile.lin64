@@ -18,7 +18,7 @@ LIBS=
 all: $(TARGET)
     $(shell [ -d $(OBJDIR) ] || mkdir $(OBJDIR))
 
-$(OBJDIR)/%.o: %.c
+$(OBJDIR)/%.o: %.c version.mak
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(TARGET): $(OBJECTS)

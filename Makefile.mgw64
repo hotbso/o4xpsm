@@ -22,7 +22,7 @@ LIBS=-L$(SDK)/Libraries/Win -lXPLM_64 -lXPWidgets_64
 
 all: $(TARGET) o4xp_Seasons_Manager/o4xpsm_install.exe
 
-$(OBJDIR)/%.o: %.c
+$(OBJDIR)/%.o: %.c version.mak
 	mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
