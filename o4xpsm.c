@@ -40,11 +40,13 @@ static const char *psep;
 static XPLMMenuID menu_id;
 static int enable_item;
 static int o4xpsm_enabled;
+static int airport_loaded;
 
 static XPLMDataRef date_day_dr, latitude_dr;
-static int cur_day = -1;
+static int cur_day = 999;
+int nh;     // on northern hemisphere
 static int season_win, season_spr, season_sum, season_fal;
-static int cached_day = -10;
+static int cached_day = 999;
 static const char *season_str[] = {"win", "spr", "sum", "fal"};
 
 static void
@@ -68,11 +70,12 @@ save_pref()
     if (NULL == f)
         return;
 
-    fprintf(f, "%d,%d,%d,%d,%d,%d", o4xpsm_enabled, cur_day,
+    /* encode southern hemisphere with negative days */
+    int d = nh ? cur_day : -cur_day;
+    fprintf(f, "%d,%d,%d,%d,%d,%d", o4xpsm_enabled, d,
                 season_win, season_spr, season_sum, season_fal);
     fclose(f);
 }
-
 
 static void
 load_pref()
@@ -81,6 +84,7 @@ load_pref()
     if (NULL == f)
         return;
 
+    nh = 1;
     if (6 == fscanf(f, "%i,%i,%i,%i,%i,%i", &o4xpsm_enabled, &cached_day,
                     &season_win, &season_spr, &season_sum, &season_fal))
         log_msg("From pref: o4xpsm_enabled: %d, cached_day: %d, seasons: %d,%d,%d,%d",
@@ -89,7 +93,13 @@ load_pref()
         o4xpsm_enabled = 0;
         log_msg("Error readinf pref");
     }
+
     fclose(f);
+
+    if (cached_day < 0) {
+        nh = 0;
+        cached_day = -cached_day;
+    }
 }
 
 // Accessor for the "o4xpsm/*" dataref
@@ -137,19 +147,25 @@ set_season(int day)
 
     season_win = season_spr = season_sum = season_fal = 0;
 
-    int nh = (XPLMGetDatad(latitude_dr) >= 0.0);
-    if (!nh) {
-        log_msg("the southern hemisphere is currently not supported");
-        return;
+    // 1. Jan = 0
+    // 1. Jul = 181
+    // 31. Dec = 364
+
+    if (nh) {
+        if (0 <= day && day <= 60)      // Jan + Feb look like spring or summer
+            season_win = 1;
+
+        if (212 <= day && day < 242)   // August is already pretty much fall
+            season_spr = 1;            // late spring looks more like summer
+    } else {
+        if (151 <= day && day <= 211)  // Jun + Jul look like spring or summer
+            season_win = 1;
+
+        if (61 <= day && day < 91)   // March is already pretty much fall
+            season_spr = 1;          // late spring looks more like summer
     }
 
-    if (0 <= day && day <= 60)      // Jan + Feb look like spring or summer
-        season_win = 1;
-
-    if (212 <= day && day < 242)   // August is already pretty much fall
-        season_spr = 1;            // late spring looks more like summer
-
-    log_msg("day: %d->%d, season: %d, %d, %d, %d", cur_day, day,
+    log_msg("nh: %d, day: %d->%d, season: %d, %d, %d, %d", nh, cur_day, day,
             season_win, season_spr, season_sum, season_fal);
     cur_day = day;
 }
@@ -201,7 +217,7 @@ XPluginStart(char *out_name, char *out_sig, char *out_desc)
 
 #if 0
     if (o4xpsm_enabled) {
-        if (cached_day >= 0)
+        if (cached_day != 999)
             set_season(cached_day);
         else
             set_season(XPLMGetDatai(date_day_dr));
@@ -250,6 +266,13 @@ XPluginEnable(void)
 PLUGIN_API void
 XPluginReceiveMessage(XPLMPluginID in_from, long in_msg, void *in_param)
 {
-    /* try to catch any event that may come prior to a scenery reload */
-    set_season(XPLMGetDatai(date_day_dr));
+    /* Everything before XPLM_MSG_AIRPORT_LOADED has bogus datarefs.
+       Anyway it's to late for the current scenery. */
+    if ((in_msg == XPLM_MSG_AIRPORT_LOADED) ||
+        (airport_loaded && (in_msg == XPLM_MSG_SCENERY_LOADED))) {
+        airport_loaded = 1;
+        int day = XPLMGetDatai(date_day_dr);
+        nh = (XPLMGetDatad(latitude_dr) >= 0.0);
+        set_season(day);
+    }
 }
