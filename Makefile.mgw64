@@ -29,16 +29,17 @@ $(OBJDIR)/%.o: %.c version.mak
 $(TARGET): $(OBJECTS)
 	$(LD) -o $(TARGET) $(LDFLAGS) $(OBJECTS) $(LIBS)
 
+o4xp_Seasons_Manager/o4xpsm_install.exe: o4xpsm_install.py version.mak
+	sh ./patch_version.sh > o4xp_Seasons_Manager/o4xpsm_install.py
+	python -m PyInstaller --distpath o4xp_Seasons_Manager/. --workpath $(OBJDIR) --onefile o4xp_Seasons_Manager/o4xpsm_install.py
+
 install: $(TARGET) o4xp_Seasons_Manager/o4xpsm_install.exe 00_NOTES.txt
 	mkdir -p "$(PLUGDIR)"
 	mkdir -p o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
 	cp -p $(TARGET) o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
-	cp -p o4xpsm_install.py o4xp_Seasons_Manager/.
 	cp -p 00_NOTES.txt o4xp_Seasons_Manager/.
 	cd o4xp_Seasons_Manager && cp -rp . "$(SCENERYDIR)/."
 
 clean:
 	rm $(OBJECTS) $(TARGET)
 
-o4xp_Seasons_Manager/o4xpsm_install.exe: o4xpsm_install.py
-	python -m PyInstaller --distpath o4xp_Seasons_Manager/. --workpath $(OBJDIR) --onefile o4xpsm_install.py

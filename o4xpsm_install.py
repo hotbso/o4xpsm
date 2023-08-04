@@ -26,6 +26,8 @@ import logging
 
 log = logging.getLogger("o4xpsm_install")
 
+version = "=VERSION="
+
 seasons = ["win", "spr", "sum", "fal"]
 sh_zones = ["vcld", "cld", "tmp", "wrm", "vhot"]
 
@@ -138,6 +140,8 @@ def check_and_link(name, path):
 logging.basicConfig(level=logging.INFO,
                     handlers=[logging.FileHandler(filename = "o4xpsm_install.log", mode='w'),
                               logging.StreamHandler()])
+
+log.info(f"Version: {version}")
 
 log.info(f"args: {sys.argv}")
 debug = "-debug" in sys.argv
