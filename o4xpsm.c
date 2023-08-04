@@ -267,7 +267,7 @@ PLUGIN_API void
 XPluginReceiveMessage(XPLMPluginID in_from, long in_msg, void *in_param)
 {
     /* Everything before XPLM_MSG_AIRPORT_LOADED has bogus datarefs.
-       Anyway it's to late for the current scenery. */
+       Anyway it's too late for the current scenery. */
     if ((in_msg == XPLM_MSG_AIRPORT_LOADED) ||
         (airport_loaded && (in_msg == XPLM_MSG_SCENERY_LOADED))) {
         airport_loaded = 1;
