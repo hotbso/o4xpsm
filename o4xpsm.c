@@ -151,18 +151,20 @@ set_season(int day)
     // 1. Jul = 181
     // 31. Dec = 364
 
+    // the difference between sh and nh seems to be 151 days = (1.Jun - 1.Jan)
+
     if (nh) {
         if (0 <= day && day <= 60)      // Jan + Feb look like spring or summer
             season_win = 1;
 
-        if (212 <= day && day < 242)   // August is already pretty much fall
-            season_spr = 1;            // late spring looks more like summer
+        if (212 <= day && day < 262)   // August is already pretty much fall
+            season_spr = 1;            // late spring looks more like summer up to 20. Sep
     } else {
         if (151 <= day && day <= 211)  // Jun + Jul look like spring or summer
             season_win = 1;
 
-        if (61 <= day && day < 91)   // March is already pretty much fall
-            season_spr = 1;          // late spring looks more like summer
+        if (61 <= day && day < 111)   // March is already pretty much fall
+            season_spr = 1;           // late spring looks more like summer
     }
 
     log_msg("nh: %d, day: %d->%d, season: %d, %d, %d, %d", nh, cur_day, day,
