@@ -159,7 +159,7 @@ parse_scenery_packs()
 
 log.info("")
 log.info("Checking links")
-check_and_link("1200_forests", os.path.abspath("../../Resources/default scenery/1200 forests"))
+check_and_link("1200_forests", "Resources/default scenery/1200 forests")
 
 if simheaven_path is not None:
     check_and_link("simHeaven_X-World_Vegetation_Library", simheaven_path)
