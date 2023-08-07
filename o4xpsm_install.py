@@ -144,9 +144,29 @@ logging.basicConfig(level=logging.INFO,
 log.info(f"Version: {version}")
 
 log.info(f"args: {sys.argv}")
-debug = "-debug" in sys.argv
+
+debug = False
+xpl_root = None
+
+i = 1
+while i < len(sys.argv):
+    if sys.argv[i] == "-debug":
+        debug = True
+    elif sys.argv[i] == "-root":
+        i = i + 1
+        if i >= len(sys.argv):
+            log.error('No argument after "-root"')
+            exit(1)
+        xpl_root = sys.argv[i]
+
+    i = i + 1
+
 if debug:
     log.info("Debug mode enabled")
+
+if xpl_root is not None:
+    log.info(f'root specified as "{xpl_root}"')
+
 
 install_dir = os.path.basename(os.path.normpath(os.path.join(os.getcwd(), '..')))
 if install_dir != 'Custom Scenery':
@@ -159,7 +179,19 @@ parse_scenery_packs()
 
 log.info("")
 log.info("Checking links")
-check_and_link("1200_forests", "Resources/default scenery/1200 forests")
+
+f1200 = "Resources/default scenery/1200 forests"
+if xpl_root is None:
+    if not os.path.isdir(os.path.normpath(os.path.join("../..", f1200))):
+        log.error('Non standard installation of X Plane detected, use: -root "path to XP12"')
+        exit(1)
+else:
+    f1200 = os.path.normpath(os.path.join(xpl_root, f1200))
+    if not os.path.isdir(f1200):
+        log.error(f'directory does not exist: {f1200}')
+        exit(1)
+
+check_and_link("1200_forests", f1200)
 
 if simheaven_path is not None:
     check_and_link("simHeaven_X-World_Vegetation_Library", simheaven_path)
