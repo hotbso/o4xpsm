@@ -84,7 +84,8 @@ def write_seasons(season, region_prefix, link):
                 realpath = f"{link}/{e[1]}"
 
             #out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
-            out.write(f"EXPORT_EXCLUDE_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
+            out.write(f"EXPORT_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
+            #out.write(f"EXPORT_SEASON_RATIO win,spr,sum,fal 0.5 {e[0]} {realpath}\n")
 
 def parse_scenery_packs():
     with open("../scenery_packs.ini", "r") as sp:
@@ -93,7 +94,7 @@ def parse_scenery_packs():
             w = l.strip().split()
             if len(w) < 2:
                 continue
-            if w[0] == "SCENERY_PACK":
+            if w[0] == "SCENERY_PACK" or w[0] == "SCENERY_PACK_DISABLED":
                 path = ' '.join(w[1:])
 
                 if path.find("simHeaven_X-World_Vegetation_Library") != -1:
@@ -111,7 +112,12 @@ def check_and_link(name, path):
 
     if os.path.isdir(name):
         log.info(f"{name} is already linked")
-        if os.path.isfile(os.path.join(name, "library.txt")):
+        if name == "Earth nav data":
+            probe = os.path.join("+00+000", "+00+000.dsf")
+        else:
+            probe = "library.txt"
+
+        if os.path.isfile(os.path.join(name, probe)):
             log.info(f"link {name} looks valid")
         else:
             log.error(f"link {name} is invalid! Check!")
@@ -198,6 +204,7 @@ if simheaven_path is not None:
 
 if gfv2_path:
     check_and_link("Global_Forests_v2", gfv2_path)
+    check_and_link("Earth nav data", os.path.join(gfv2_path, "Earth nav data"))
 
 log.info("")
 log.info("Creating library.txt")
