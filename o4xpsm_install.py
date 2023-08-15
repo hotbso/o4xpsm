@@ -204,7 +204,7 @@ if simheaven_path is not None:
 
 if gfv2_path:
     check_and_link("Global_Forests_v2", gfv2_path)
-    check_and_link("Earth nav data", os.path.join(gfv2_path, "Earth nav data"))
+    #check_and_link("Earth nav data", os.path.join(gfv2_path, "Earth nav data"))
 
 log.info("")
 log.info("Creating library.txt")

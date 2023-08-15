@@ -163,26 +163,25 @@ set_season(int day)
 
     // the difference between sh and nh seems to be 151 days = (1.Jun - 1.Jan)
 
-#define BETWEEN(x,y) (x) <= day && day <= (y)
     if (nh) {
-        if (BETWEEN(0, 103)) {                  // Jan + Feb look like spring or summer
+        if (day <= 103) {                  // Jan + Feb look like spring or summer
             season_win = 1;
-        } else if (BETWEEN(104, 118)) {
+        } else if (day <= 118) {
             season_win = 1;
             season_spr = 1;
-        } else if (BETWEEN(119, 150)) {
+        } else if (day <= 150) {
             season_spr = 1;
-        } else if (BETWEEN(151, 165)) {
+        } else if (day <= 165) {
             season_spr = 1;
             season_sum = 1;
-        } else if (BETWEEN(166, 211)) {
+        } else if (day <= 211) {
             season_sum = 1;
-        } else if (BETWEEN(212, 262)) {         // August is already pretty much fall
+        } else if (day <= 262) {         // August is already pretty much fall
             season_spr = 1;                     // late spring looks more like summer
-        } else if (BETWEEN(263, 277)) {
+        } else if (day <= 277) {
             season_spr = 1;
             season_fal = 1;
-        } else if (BETWEEN(278, 365)) {         // win textures don't look like winter befor 1.1
+        } else if (day <= 365) {         // win textures don't look like winter befor 1.1
             season_fal = 1;
         }
     } else {

@@ -1,4 +1,4 @@
-SCENERYDIR=E:/X-Plane-12-clean/Custom Scenery/o4xp_Seasons_Manager
+SCENERYDIR=E:/X-Plane-12/Custom Scenery/o4xp_Seasons_Manager
 PLUGDIR=$(SCENERYDIR)/plugins/o4xpsm/win_x64
 
 OBJDIR=./OBJ
