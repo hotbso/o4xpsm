@@ -161,7 +161,7 @@ set_season(int day)
     // 1. Dec = 333
     // 31. Dec = 364
 
-    // the difference between sh and nh seems to be 151 days = (1.Jun - 1.Jan)
+    // the difference between sh and nh seems to be 150 days = (1.Jun - 1.Jan)
 
     if (nh) {
         if (day <= 103) {                  // Jan + Feb look like spring or summer
@@ -177,7 +177,7 @@ set_season(int day)
         } else if (day <= 211) {
             season_sum = 1;
         } else if (day <= 262) {         // August is already pretty much fall
-            season_spr = 1;                     // late spring looks more like summer
+            season_spr = 1;              // late spring looks more like summer
         } else if (day <= 277) {
             season_spr = 1;
             season_fal = 1;
@@ -185,6 +185,7 @@ set_season(int day)
             season_fal = 1;
         }
     } else {
+        // could not find a reasonable mapping for sh
         if (151 <= day && day <= 211)  // Jun + Jul look like spring or summer
             season_win = 1;
 
