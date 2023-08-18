@@ -135,7 +135,14 @@ read_season_acc(void *ref)
     return val;
 }
 
-// set season according to standard values
+// set season according to date
+//
+// On o4xp XPL only uses seasons sum and fal with the following dates GLOBALLY:
+// 1.1 -> 1.9 inclusive: sum    (= day 243)
+// 2.9 -> 31.12. inclusive: fal
+// Within these seasons it interpolates by day with an unknown algorithm
+// e.g. 1.1. = full summer on the nh.
+//
 static void
 set_season(int day)
 {
@@ -148,20 +155,18 @@ set_season(int day)
     season_win = season_spr = season_sum = season_fal = 0;
 
     // 1. Jan = 0
-    // 1. Feb = 30
-    // 1. Mar = 58
-    // 1. Apr = 89
-    // 1. May = 119
-    // 1. Jun = 150
-    // 1. Jul = 180
-    // 1. Aug = 211
-    // 1. Sep = 242
-    // 1. Oct = 272
-    // 1. Nov = 303
-    // 1. Dec = 333
+    // 1. Feb = 31
+    // 1. Mar = 59
+    // 1. Apr = 90
+    // 1. May = 120
+    // 1. Jun = 151
+    // 1. Jul = 181
+    // 1. Aug = 212
+    // 1. Sep = 243
+    // 1. Oct = 273
+    // 1. Nov = 304
+    // 1. Dec = 334
     // 31. Dec = 364
-
-    // the difference between sh and nh seems to be 150 days = (1.Jun - 1.Jan)
 
     if (nh) {
         if (day <= 103) {                  // Jan + Feb look like spring or summer
@@ -185,12 +190,48 @@ set_season(int day)
             season_fal = 1;
         }
     } else {
+        if (day <= 52) {
+            season_spr = 1;
+        } else if (day <= 59) {
+            season_spr = 1;
+            season_sum = 1;
+        } else if (day <= 66) {         // 1. week March
+            season_sum = 1;
+        } else if (day <= 73) {         // mid march
+            season_sum = 1;
+            season_win = 1;
+        } else if (day <= 134) {        // mid May
+            season_sum = 1;
+        } else if (day <= 151) {        // 1. June
+            season_sum = 1;
+            season_fal = 1;
+        } else if (day <= 158) {
+            season_sum = 1;
+            season_fal = 1;
+        } else if (day <= 181) {        // 1. Jul
+            season_win = 1;
+            season_fal = 1;
+        } else if (day <= 212) {        // 1. Aug
+            season_win = 1;
+        } else if (day <= 250) {        // 1. week Sep
+            season_fal = 1;
+        } else if (day <= 264) {
+            season_fal = 1;
+            season_spr = 1;
+        } else if (day <= 318) {
+            season_sum = 1;
+            season_spr = 1;
+        } else if (day <= 365) {
+            season_win = 1;
+        }
+#if 0
         // could not find a reasonable mapping for sh
         if (151 <= day && day <= 211)  // Jun + Jul look like spring or summer
             season_win = 1;
 
         if (61 <= day && day < 111)   // March is already pretty much fall
             season_spr = 1;           // late spring looks more like summer
+#endif
     }
 
     log_msg("nh: %d, day: %d->%d, season: %d, %d, %d, %d", nh, cur_day, day,
