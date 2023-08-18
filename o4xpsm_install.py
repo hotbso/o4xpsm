@@ -32,9 +32,9 @@ seasons = ["win", "spr", "sum", "fal"]
 sh_zones = ["vcld", "cld", "tmp", "wrm", "vhot"]
 
 debug_for = {"win": "1200_forests/sum/tree_coconut_palm_1.for",
-             "spr": "1200_forests/spr/tree_aspen_1.for",
-             "sum": "1200_forests/sum/tree_maple_2.for",
-             "fal": "1200_forests/fal/tree_maple_2.for"}
+             "spr": "1200_forests/spr/tree_fir_4.for",
+             "sum": "1200_forests/sum/tree_maple_3.for",
+             "fal": "1200_forests/fal/tree_shr_dec_1.for"}
 
 simheaven_path = None
 gfv2_path = None
@@ -79,13 +79,13 @@ def write_seasons(season, region_prefix, link):
 
         for e in season[s]:
             if debug:
-                realpath = "1200_forests/sum/tree_maple_2.for" #debug_for[s]
+                realpath = debug_for[s]
+                #out.write(f"EXPORT_EXCLUDE_SEASON {s} {e[0]} {realpath}\n")
+                out.write(f"EXPORT_SEASON {s} {e[0]} {realpath}\n")
             else:
                 realpath = f"{link}/{e[1]}"
-
-            #out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
-            out.write(f"EXPORT_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
-            #out.write(f"EXPORT_SEASON_RATIO win,spr,sum,fal 0.5 {e[0]} {realpath}\n")
+                #out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
+                out.write(f"EXPORT_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
 
 def parse_scenery_packs():
     with open("../scenery_packs.ini", "r") as sp:
@@ -210,35 +210,27 @@ log.info("")
 log.info("Creating library.txt")
 out = open("library.txt", "w")
 
-
 out.write("""A
 1200
 LIBRARY
 
 # seasons ###################################
 
-REGION_DEFINE o4xpsm_win
-REGION_ALL
-REGION_DREF o4xpsm/win == 1
-
-REGION_DEFINE o4xpsm_spr
-REGION_ALL
-REGION_DREF o4xpsm/spr == 1
-
-REGION_DEFINE o4xpsm_sum
-REGION_ALL
-REGION_DREF o4xpsm/sum == 1
-
-REGION_DEFINE o4xpsm_fal
-REGION_ALL
-REGION_DREF o4xpsm/fal == 1
 """)
 
 
-for z in sh_zones:
-    for s in seasons:
+for s in seasons:
+    out.write(f"\nREGION_DEFINE o4xpsm_{s}\n")
+    out.write(f"REGION_ALL\n")
+    if debug:
+        out.write("#")
+    out.write(f"REGION_DREF o4xpsm/{s} == 1\n")
+
+    for z in sh_zones:
         out.write(f"\nREGION_DEFINE o4xpsm_sh_{z}_{s}\n")
         out.write(f"REGION_BITMAP simHeaven_X-World_Vegetation_Library/Maps/climate_zone_{z}.png\n")
+        if debug:
+            out.write("#")
         out.write(f"REGION_DREF o4xpsm/{s} == 1\n")
 
 log.info("Processing XP12 native forests")
