@@ -83,7 +83,12 @@ def write_seasons(season, region_prefix, link):
                 #out.write(f"EXPORT_EXCLUDE_SEASON {s} {e[0]} {realpath}\n")
                 out.write(f"EXPORT_SEASON {s} {e[0]} {realpath}\n")
             else:
-                realpath = f"{link}/{e[1]}"
+                # dealias "1200 forests" for simheaven, may save a few obj loads
+                f = e[1].split("/")
+                if f[0] == "1200 forests":
+                    realpath = "1200_forests/" + "/".join(f[1:])
+                else:
+                    realpath = f"{link}/{e[1]}"
                 #out.write(f"EXPORT_EXCLUDE {e[0]} {realpath}\n")
                 out.write(f"EXPORT_SEASON win,spr,sum,fal {e[0]} {realpath}\n")
 
@@ -112,12 +117,8 @@ def check_and_link(name, path):
 
     if os.path.isdir(name):
         log.info(f"{name} is already linked")
-        if name == "Earth nav data":
-            probe = os.path.join("+00+000", "+00+000.dsf")
-        else:
-            probe = "library.txt"
 
-        if os.path.isfile(os.path.join(name, probe)):
+        if os.path.isfile(os.path.join(name, "library.txt")):
             log.info(f"link {name} looks valid")
         else:
             log.error(f"link {name} is invalid! Check!")
@@ -204,7 +205,6 @@ if simheaven_path is not None:
 
 if gfv2_path:
     check_and_link("Global_Forests_v2", gfv2_path)
-    #check_and_link("Earth nav data", os.path.join(gfv2_path, "Earth nav data"))
 
 log.info("")
 log.info("Creating library.txt")
