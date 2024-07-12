@@ -1,0 +1,3 @@
+#!/bin/bash
+rm -f o4xpsm.zip
+cd o4xpsm-pkg && /c/Program\ Files/7-Zip/7z.exe a ../o4xpsm.zip

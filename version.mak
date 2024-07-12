@@ -1,2 +1,2 @@
-PROJECT=o4xp_Seasons_Manager
-VERSION=1.10
+PROJECT=o4xpsm
+VERSION=2.00-b1

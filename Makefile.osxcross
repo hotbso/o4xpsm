@@ -47,11 +47,8 @@ $(TARGET)_x86: $(OBJECTS_x86)
 
 $(TARGET): $(TARGET)_arm $(TARGET)_x86
 	lipo -create -output $@ $(TARGET)_arm $(TARGET)_x86
-
-# install the just compiled target
-install: $(TARGET)
-	mkdir -p o4xp_Seasons_Manager/plugins/o4xpsm/mac_x64
-	cp -p $(TARGET) o4xp_Seasons_Manager/plugins/o4xpsm/mac_x64        
+	mkdir -p o4xpsm-pkg/o4xpsm/mac_x64
+	cp -p $(TARGET) o4xpsm-pkg/o4xpsm/mac_x64/.
 
 clean:
 	rm -f $(TARGET) $(OBJDIR)/*.o_* $(OBJDIR)/*.xpl_*

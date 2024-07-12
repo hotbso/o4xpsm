@@ -23,10 +23,8 @@ $(OBJDIR)/%.o: %.c version.mak
 
 $(TARGET): $(OBJECTS)
 	$(CC) -o $(TARGET) $(LNFLAGS) $(OBJECTS) $(LIBS)
+	mkdir -p o4xpsm-pkg/o4xpsm/lin_x64
+	cp -p $(TARGET) o4xpsm-pkg/o4xpsm/lin_x64
 
 clean:
 	rm -f $(OBJECTS) $(LACFU_OBJECTS) $(TARGET)
-
-install: $(TARGET)
-	mkdir -p o4xp_Seasons_Manager/plugins/o4xpsm/lin_x64
-	cp -p $(TARGET) o4xp_Seasons_Manager/plugins/o4xpsm/lin_x64        

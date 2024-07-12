@@ -1,7 +1,5 @@
-SCENERYDIR=E:/X-Plane-12-clean/Custom Scenery/o4xp_Seasons_Manager
-PLUGDIR=$(SCENERYDIR)/plugins/o4xpsm/win_x64
 
-OBJDIR=./OBJ
+OBJDIR=./OBJ_win
 
 include version.mak
 
@@ -20,7 +18,7 @@ CFLAGS+=-DVERSION=\"$(VERSION)\"  -mdll -g0 -O2 -s -Wall -fdiagnostics-color -Wn
 LDFLAGS=-shared -static-libgcc -static -lpthread
 LIBS=-L$(SDK)/Libraries/Win -lXPLM_64 -lXPWidgets_64
 
-all: $(TARGET) o4xp_Seasons_Manager/o4xpsm_install.exe
+all: $(TARGET) o4xpsm-pkg/o4xpsm_Library/o4xpsm_install.exe
 
 $(OBJDIR)/%.o: %.c version.mak
 	mkdir -p $(OBJDIR)
@@ -28,17 +26,12 @@ $(OBJDIR)/%.o: %.c version.mak
 
 $(TARGET): $(OBJECTS)
 	$(LD) -o $(TARGET) $(LDFLAGS) $(OBJECTS) $(LIBS)
+	mkdir -p o4xpsm-pkg/o4xpsm/win_x64
+	cp $(TARGET) o4xpsm-pkg/o4xpsm/win_x64/.
 
-o4xp_Seasons_Manager/o4xpsm_install.exe: o4xpsm_install.py version.mak
-	sh ./patch_version.sh > o4xp_Seasons_Manager/o4xpsm_install.py
-	python -m PyInstaller --distpath o4xp_Seasons_Manager/. --workpath $(OBJDIR) --onefile o4xp_Seasons_Manager/o4xpsm_install.py
-
-install: $(TARGET) o4xp_Seasons_Manager/o4xpsm_install.exe 00_NOTES.txt
-	mkdir -p "$(PLUGDIR)"
-	mkdir -p o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
-	cp -p $(TARGET) o4xp_Seasons_Manager/plugins/o4xpsm/win_x64
-	cp -p 00_NOTES.txt o4xp_Seasons_Manager/.
-	cd o4xp_Seasons_Manager && cp -rp . "$(SCENERYDIR)/."
+o4xpsm-pkg/o4xpsm_Library/o4xpsm_install.exe: o4xpsm_install.py version.mak
+	sh ./patch_version.sh > o4xpsm-pkg/o4xpsm_Library/o4xpsm_install.py
+	"/c/Program Files/Python311/python" -m PyInstaller --distpath o4xpsm-pkg/o4xpsm_Library/. --workpath $(OBJDIR) --onefile o4xpsm-pkg/o4xpsm_Library/o4xpsm_install.py
 
 clean:
 	rm $(OBJECTS) $(TARGET)
